@@ -1,5 +1,4 @@
 IntList pillars;
-int index = 1;
 
 void setup() {
   size(500, 500);
@@ -7,14 +6,17 @@ void setup() {
   fill(255);
   pillars = new IntList();
   totalPillars(pillars);
-  shuffleList(pillars);
-  drawPillars(0, pillars);
+  pillars=shuffled(pillars,0);
 }
 
 void draw() {
+  clear();
+  drawPillars(0, pillars);
+  pillars=sortingHat(pillars);
 }
 
 void keyPressed() {
+  
 }
 
 
@@ -25,26 +27,56 @@ void totalPillars(IntList p) {
   }
 }
 
-public static void shuffleList(IntList p) { //first part of shuffle function
-  int n = p.size();
-  Random random = new Random();
-  random.nextInt();
-  for (int i = 0; i < n; i++) {
-    int change = i + random.nextInt(n - i);
-    swap(p, i, change);
+IntList shuffled(IntList p, int index) {
+  int r = (int) random(0,p.size());
+  IntList r2 = new IntList();
+  r2.append(p);
+  int indexValue = p.get(index);
+  r2.set(r,indexValue);
+  r2.set(index, p.get(r));
+  index++;
+  if(p.size()>index){
+    return shuffled(r2,index);
+  } else {
+    return r2;
   }
 }
 
-private static void swap(IntList p, int i, int change) { //second part of shuffle function
-  int helper = p.get(i);
-  p.set(i, p.get(change));
-  p.set(change, helper);
-}
-
 void drawPillars(int a, IntList p) {
-  println(pillars);
   rect(a*50, height, 50, (p.get(a)*-1)-50);
   if (a<9) {
     drawPillars(a+1, p);
+  }
+}
+
+IntList sortingHat(IntList p){
+  if(p.size()==2){
+    if(p.get(0)>p.get(1)){
+      int largest = p.get(0);    
+      p.remove(0);
+      p.append(largest);
+  }
+    return p;
+  } else {
+    IntList p2;
+    p2 = new IntList();
+    p2=p.copy();
+    int first = p.get(0);
+    p2.remove(0);
+    p2=sortingHat(p2);
+    if(first<p2.get(0)){
+      IntList p3;
+      p3 = new IntList();
+      p3.append(first);
+      p3.append(p2);
+      p=p3;
+    } else {
+      IntList p3;
+      p3 = new IntList();
+      p3.append(p2);
+      p3.append(first);
+      p=sortingHat(p3);
+    }
+    return p;
   }
 }
